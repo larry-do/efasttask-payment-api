@@ -25,15 +25,15 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 public class NganLuongPaymentAPI {
-    public final String LIVE_ENDPOINT = "https://www.nganluong.vn/checkout.api.nganluong.post.php";
-    public final String SANDBOX_ENDPOINT = "https://sandbox.nganluong.vn:8088/nl35/checkout.api.nganluong.post.php";
+    public static final String LIVE_ENDPOINT = "https://www.nganluong.vn/checkout.api.nganluong.post.php";
+    public static final String SANDBOX_ENDPOINT = "https://sandbox.nganluong.vn:8088/nl35/checkout.api.nganluong.post.php";
 
 
-    public PaymentRequest createPaymentRequest(String merchant_id, String merchant_password, String merchant_email,
-                                               String order_code, String order_description,
-                                               String currency_code, String total_price, String shipping_fee, String discount_amt, String tax_amt,
-                                               String return_url, String cancel_url,
-                                               String bank_code, String full_name, String email, String mobile, String payment_method) {
+    public static PaymentRequest createPaymentRequest(String merchant_id, String merchant_password, String merchant_email,
+                                                      String order_code, String order_description,
+                                                      String currency_code, String total_price, String shipping_fee, String discount_amt, String tax_amt,
+                                                      String return_url, String cancel_url,
+                                                      String bank_code, String buyer_full_name, String buyer_email, String buyer_mobile, String payment_method) {
         PaymentRequest request = new PaymentRequest();
         request.setFuntion("SetExpressCheckout");
         request.setVersion("3.1");
@@ -51,17 +51,17 @@ public class NganLuongPaymentAPI {
         request.setOrder_description(order_description);
         request.setReturn_url(return_url);
         request.setCancel_url(cancel_url);
-        request.setBuyer_email(email);
-        request.setBuyer_mobile(mobile);
+        request.setBuyer_email(buyer_email);
+        request.setBuyer_mobile(buyer_mobile);
         try {
-            request.setBuyer_fullname(URLEncoder.encode(full_name, "UTF-8"));
+            request.setBuyer_fullname(URLEncoder.encode(buyer_full_name, "UTF-8"));
         } catch (Exception e) {
             e.printStackTrace();
         }
         return request;
     }
 
-    public CheckOrderRequest createCheckOrderRequest(String merchant_id, String merchant_password, String token) {
+    public static CheckOrderRequest createCheckOrderRequest(String merchant_id, String merchant_password, String token) {
         CheckOrderRequest request = new CheckOrderRequest();
         request.setFuntion("GetTransactionDetail");
         request.setVersion("3.1");
@@ -71,11 +71,11 @@ public class NganLuongPaymentAPI {
         return request;
     }
 
-    public PaymentResponse sendPaymentRequest(PaymentRequest paymentRequest) throws Exception {
+    public static PaymentResponse sendPaymentRequest(PaymentRequest paymentRequest) throws Exception {
         return sendPaymentRequest(paymentRequest, LIVE_ENDPOINT);
     }
 
-    public PaymentResponse sendPaymentRequest(PaymentRequest paymentRequest, String endpoint) throws Exception {
+    public static PaymentResponse sendPaymentRequest(PaymentRequest paymentRequest, String endpoint) throws Exception {
         String result = call(endpoint, getPostParameters(paymentRequest));
         result = result.replace("&", "&amp;");
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -109,11 +109,11 @@ public class NganLuongPaymentAPI {
         return response;
     }
 
-    public CheckOrderResponse getOrderInformation(CheckOrderRequest checkOrderRequest) throws Exception {
+    public static CheckOrderResponse getOrderInformation(CheckOrderRequest checkOrderRequest) throws Exception {
         return getOrderInformation(checkOrderRequest, LIVE_ENDPOINT);
     }
 
-    public CheckOrderResponse getOrderInformation(CheckOrderRequest checkOrderRequest, String endpoint) throws Exception {
+    public static CheckOrderResponse getOrderInformation(CheckOrderRequest checkOrderRequest, String endpoint) throws Exception {
         String _params = "";
         _params += "function=" + checkOrderRequest.getFuntion();
         _params += "&version=" + checkOrderRequest.getVersion();
@@ -309,7 +309,7 @@ public class NganLuongPaymentAPI {
             case "05":
                 return "Tài khoản nhận tiền nạp của merchant không tồn tại";
             case "06":
-                return "Tài khoản nhận tiền nạp của  merchant đang bị khóa hoặc bị phong tỏa, không thể thực hiện được giao dịch nạp tiền";
+                return "Tài khoản nhận tiền nạp của merchant đang bị khóa hoặc bị phong tỏa, không thể thực hiện được giao dịch nạp tiền";
             case "07":
                 return "Thẻ đã được sử dụng";
             case "08":
