@@ -293,9 +293,9 @@ public class NganLuongPaymentAPI {
         return sb.toString();
     }
 
-    private static String getErrorMessage(String errorCode) {
-        if (StringUtils.isEmpty(errorCode)) return "";
-        switch (errorCode) {
+    private static String getMessage(String code) {
+        if (StringUtils.isEmpty(code)) return "";
+        switch (code) {
             case "00":
                 return "Giao dịch thành công";
             case "01":
