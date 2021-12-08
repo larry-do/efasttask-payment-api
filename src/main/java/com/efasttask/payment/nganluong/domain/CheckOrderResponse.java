@@ -1,9 +1,12 @@
 package com.efasttask.payment.nganluong.domain;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 
 public class CheckOrderResponse implements Serializable {
     private String error_code;
+    private String message;
     private String token;
     private String description;
     private String transaction_status;
@@ -32,6 +35,44 @@ public class CheckOrderResponse implements Serializable {
 
     public void setError_code(String error_code) {
         this.error_code = error_code;
+        if (StringUtils.isEmpty(error_code))  this.setMessage("");
+        switch (error_code) {
+            case "00":
+                this.setMessage("Thành công");
+                break;
+            case "01":
+                this.setMessage("Sai phương thức, không đúng phương thức POST");
+                break;
+            case "03":
+                this.setMessage("Sai tham số gửi tới NganLuong.vn (có tham số sai tên hoặc kiểu dữ liệu), sai checksum");
+                break;
+            case "06":
+                this.setMessage("Mã merchant không tồn tại hoặc chưa được kích hoạt");
+                break;
+            case "29":
+                this.setMessage("Token không tồn tại");
+                break;
+            case "81":
+                this.setMessage("Đơn hàng chưa được thanh toán");
+                break;
+            case "99":
+                this.setMessage("Lỗi không xác định");
+                break;
+            case "13":
+                this.setMessage("Đơn hàng không đúng của Merchant");
+                break;
+            default:
+                this.setMessage("");
+                break;
+        }
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getToken() {
