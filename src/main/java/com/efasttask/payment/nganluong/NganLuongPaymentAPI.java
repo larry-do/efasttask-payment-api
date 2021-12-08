@@ -4,6 +4,7 @@ import com.efasttask.payment.nganluong.domain.PaymentRequest;
 import com.efasttask.payment.nganluong.domain.PaymentResponse;
 import com.efasttask.payment.nganluong.domain.CheckOrderRequest;
 import com.efasttask.payment.nganluong.domain.CheckOrderResponse;
+import com.efasttask.util.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
@@ -11,18 +12,20 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class NganLuongPaymentAPI {
     public static final String LIVE_ENDPOINT = "https://www.nganluong.vn/checkout.api.nganluong.post.php";
@@ -71,11 +74,11 @@ public class NganLuongPaymentAPI {
         return request;
     }
 
-    public static PaymentResponse sendPaymentRequest(PaymentRequest paymentRequest) throws Exception {
+    public static PaymentResponse sendPaymentRequest(PaymentRequest paymentRequest) throws NoSuchAlgorithmException, IOException, ParserConfigurationException, SAXException {
         return sendPaymentRequest(paymentRequest, LIVE_ENDPOINT);
     }
 
-    public static PaymentResponse sendPaymentRequest(PaymentRequest paymentRequest, String endpoint) throws Exception {
+    public static PaymentResponse sendPaymentRequest(PaymentRequest paymentRequest, String endpoint) throws NoSuchAlgorithmException, IOException, ParserConfigurationException, SAXException {
         String result = call(endpoint, getPostParameters(paymentRequest));
         result = result.replace("&", "&amp;");
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -109,16 +112,16 @@ public class NganLuongPaymentAPI {
         return response;
     }
 
-    public static CheckOrderResponse getOrderInformation(CheckOrderRequest checkOrderRequest) throws Exception {
+    public static CheckOrderResponse getOrderInformation(CheckOrderRequest checkOrderRequest) throws NoSuchAlgorithmException, IOException, ParserConfigurationException, SAXException {
         return getOrderInformation(checkOrderRequest, LIVE_ENDPOINT);
     }
 
-    public static CheckOrderResponse getOrderInformation(CheckOrderRequest checkOrderRequest, String endpoint) throws Exception {
+    public static CheckOrderResponse getOrderInformation(CheckOrderRequest checkOrderRequest, String endpoint) throws NoSuchAlgorithmException, IOException, ParserConfigurationException, SAXException {
         String _params = "";
         _params += "function=" + checkOrderRequest.getFuntion();
         _params += "&version=" + checkOrderRequest.getVersion();
         _params += "&merchant_id=" + checkOrderRequest.getMerchant_id();
-        _params += "&merchant_password=" + createMD5Hash(checkOrderRequest.getMerchant_password());
+        _params += "&merchant_password=" + SecurityUtils.md5(checkOrderRequest.getMerchant_password());
         _params += "&token=" + checkOrderRequest.getToken();
         String result = call(endpoint, _params);
         result = result.replace("&", "&amp;");
@@ -235,7 +238,7 @@ public class NganLuongPaymentAPI {
         return "";
     }
 
-    private static String call(String endpointUrl, String params) throws Exception {
+    private static String call(String endpointUrl, String params) throws IOException {
         URL url = new URL(endpointUrl);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
@@ -258,14 +261,14 @@ public class NganLuongPaymentAPI {
         return response.substring(0, response.length() - 1);
     }
 
-    private static String getPostParameters(PaymentRequest request) throws Exception {
+    private static String getPostParameters(PaymentRequest request) throws NoSuchAlgorithmException {
         String _param = "";
         _param += "function=" + request.getFuntion();
         _param += "&cur_code=" + request.getCur_code();
         _param += "&version=" + request.getVersion();
         _param += "&merchant_id=" + request.getMerchant_id();
         _param += "&receiver_email=" + request.getReceiver_email();
-        _param += "&merchant_password=" + createMD5Hash(request.getMerchant_password());
+        _param += "&merchant_password=" + SecurityUtils.md5(request.getMerchant_password());
         _param += "&order_code=" + request.getOrder_code();
         _param += "&total_amount=" + request.getTotal_amount();
         _param += "&payment_method=" + request.getPayment_method();
@@ -281,16 +284,6 @@ public class NganLuongPaymentAPI {
         _param += "&buyer_email=" + request.getBuyer_email();
         _param += "&buyer_mobile=" + request.getBuyer_mobile();
         return _param;
-    }
-
-    private static String createMD5Hash(String str) throws Exception {
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] array = md.digest(str.getBytes(StandardCharsets.UTF_8));
-        StringBuilder sb = new StringBuilder();
-        for (byte b : array) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
     }
 
     private static String getMessage(String code) {
