@@ -1,11 +1,12 @@
-package com.efasttask.payment.nganluong;
-
+import com.efasttask.payment.nganluong.Bank;
+import com.efasttask.payment.nganluong.NganLuongPaymentAPI;
+import com.efasttask.payment.nganluong.PaymentMethod;
 import com.efasttask.payment.nganluong.domain.CheckOrderRequest;
 import com.efasttask.payment.nganluong.domain.CheckOrderResponse;
 import com.efasttask.payment.nganluong.domain.PaymentRequest;
 import com.efasttask.payment.nganluong.domain.PaymentResponse;
 
-public class Test {
+public class NganLuongTest {
     public static void main(String[] args) throws Exception {
         String id = "65867";
         String pass = "cd7d987316938bf5f11210c02db91d33";
