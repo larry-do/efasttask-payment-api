@@ -1,9 +1,11 @@
 package com.efasttask.payment.vnpay.domain;
 
+import com.efasttask.payment.vnpay.Bank;
+
 public class PaymentCreateParam extends VnpayParam {
     private String vnp_Version;
     private String vnp_Command;
-
+    protected String vnp_TmnCode;
     private String vnp_TxnRef;
 
     private String vnp_OrderInfo;
@@ -152,6 +154,10 @@ public class PaymentCreateParam extends VnpayParam {
 
     public void setVnp_BankCode(String vnp_BankCode) {
         this.vnp_BankCode = vnp_BankCode;
+    }
+
+    public void setVnp_BankCode(Bank bank) {
+        this.vnp_BankCode = bank.toString();
     }
 
     public String getVnp_TxnRef() {
@@ -336,5 +342,13 @@ public class PaymentCreateParam extends VnpayParam {
 
     public void setVnp_Inv_Type(String vnp_Inv_Type) {
         this.vnp_Inv_Type = vnp_Inv_Type;
+    }
+
+    public String getVnp_TmnCode() {
+        return vnp_TmnCode;
+    }
+
+    public void setVnp_TmnCode(String vnp_TmnCode) {
+        this.vnp_TmnCode = vnp_TmnCode;
     }
 }

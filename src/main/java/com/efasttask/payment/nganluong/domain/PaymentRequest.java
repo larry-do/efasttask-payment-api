@@ -1,5 +1,7 @@
 package com.efasttask.payment.nganluong.domain;
 
+import com.efasttask.payment.nganluong.Bank;
+
 import java.io.Serializable;
 
 public class PaymentRequest implements Serializable {
@@ -119,6 +121,10 @@ public class PaymentRequest implements Serializable {
 
     public void setBank_code(String _bank_code) {
         this._bank_code = _bank_code;
+    }
+
+    public void setBank_code(Bank bank) {
+        this._bank_code = bank.toString();
     }
 
     public String getOrder_description() {

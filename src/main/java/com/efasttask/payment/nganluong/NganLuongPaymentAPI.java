@@ -4,7 +4,7 @@ import com.efasttask.payment.nganluong.domain.PaymentRequest;
 import com.efasttask.payment.nganluong.domain.PaymentResponse;
 import com.efasttask.payment.nganluong.domain.CheckOrderRequest;
 import com.efasttask.payment.nganluong.domain.CheckOrderResponse;
-import com.efasttask.util.SecurityUtils;
+import com.efasttask.util.EftSecurity;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
@@ -121,7 +121,7 @@ public class NganLuongPaymentAPI {
         _params += "function=" + checkOrderRequest.getFuntion();
         _params += "&version=" + checkOrderRequest.getVersion();
         _params += "&merchant_id=" + checkOrderRequest.getMerchant_id();
-        _params += "&merchant_password=" + SecurityUtils.md5(checkOrderRequest.getMerchant_password());
+        _params += "&merchant_password=" + EftSecurity.md5(checkOrderRequest.getMerchant_password());
         _params += "&token=" + checkOrderRequest.getToken();
         String result = call(endpoint, _params);
         result = result.replace("&", "&amp;");
@@ -268,7 +268,7 @@ public class NganLuongPaymentAPI {
         _param += "&version=" + request.getVersion();
         _param += "&merchant_id=" + request.getMerchant_id();
         _param += "&receiver_email=" + request.getReceiver_email();
-        _param += "&merchant_password=" + SecurityUtils.md5(request.getMerchant_password());
+        _param += "&merchant_password=" + EftSecurity.md5(request.getMerchant_password());
         _param += "&order_code=" + request.getOrder_code();
         _param += "&total_amount=" + request.getTotal_amount();
         _param += "&payment_method=" + request.getPayment_method();

@@ -3,7 +3,7 @@ package com.efasttask.payment.vnpay.domain;
 public class PaymentQueryParam extends VnpayParam {
     private String vnp_Version;
     private String vnp_Command;
-
+    protected String vnp_TmnCode;
     private String vnp_TxnRef;
 
     private String vnp_OrderInfo;
@@ -97,5 +97,13 @@ public class PaymentQueryParam extends VnpayParam {
 
     public void setVnp_CreateDate(String vnp_CreateDate) {
         this.vnp_CreateDate = vnp_CreateDate;
+    }
+
+    public String getVnp_TmnCode() {
+        return vnp_TmnCode;
+    }
+
+    public void setVnp_TmnCode(String vnp_TmnCode) {
+        this.vnp_TmnCode = vnp_TmnCode;
     }
 }

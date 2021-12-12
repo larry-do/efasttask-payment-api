@@ -1,7 +1,7 @@
 package com.efasttask.payment.vnpay;
 
 import com.efasttask.payment.vnpay.domain.VnpayParam;
-import com.efasttask.util.SecurityUtils;
+import com.efasttask.util.EftSecurity;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -35,10 +35,12 @@ public class VnpayAPI {
                 sb.append("&");
             }
         }
-        return SecurityUtils.hmacSHA512(vnpayHashSecret, sb.toString());
+        return EftSecurity.hmacSHA512(vnpayHashSecret, sb.toString());
     }
 
     public static String generateCallUrl(VnpayParam param, String endpoint) {
+        String hashQuery = param.generateHashQuery();
+        if (hashQuery == null) return null;
         return endpoint + "?" + param.generateHashQuery();
     }
 

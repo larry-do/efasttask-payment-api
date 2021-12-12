@@ -1,6 +1,6 @@
 package com.efasttask.payment.vnpay.domain;
 
-import com.efasttask.util.SecurityUtils;
+import com.efasttask.util.EftSecurity;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -14,16 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class VnpayParam {
-    protected String vnp_TmnCode;
     protected String vnp_HashSecret;
-
-    public String getVnp_TmnCode() {
-        return vnp_TmnCode;
-    }
-
-    public void setVnp_TmnCode(String vnp_TmnCode) {
-        this.vnp_TmnCode = vnp_TmnCode;
-    }
 
     public String getVnp_HashSecret() {
         return vnp_HashSecret;
@@ -35,13 +26,15 @@ public abstract class VnpayParam {
 
     public String generateQuery() {
         try {
-            List<String> fieldNames = Arrays.stream(this.getClass().getFields()).map(Field::getName).sorted().collect(Collectors.toList());
+            List<String> fieldNames = Arrays.stream(this.getClass().getDeclaredFields()).map(Field::getName).sorted().collect(Collectors.toList());
             StringBuilder query = new StringBuilder();
             Iterator<String> itr = fieldNames.iterator();
             while (itr.hasNext()) {
                 String fieldName = itr.next();
-                if (this.getClass().getField(fieldName).get(this) == null) continue;
-                String fieldValue = (String) this.getClass().getField(fieldName).get(this);
+                Field field = this.getClass().getDeclaredField(fieldName);
+                field.setAccessible(true);
+                if (field.get(this) == null) continue;
+                String fieldValue = (String) field.get(this);
                 if ((fieldValue != null) && (fieldValue.length() > 0)) {
                     query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
                     query.append('=');
@@ -50,6 +43,7 @@ public abstract class VnpayParam {
                         query.append('&');
                     }
                 }
+                field.setAccessible(false);
             }
             return query.toString();
         } catch (UnsupportedEncodingException | NoSuchFieldException | IllegalAccessException e) {
@@ -60,13 +54,15 @@ public abstract class VnpayParam {
 
     public String generateHash() {
         try {
-            List<String> fieldNames = Arrays.stream(this.getClass().getFields()).map(Field::getName).sorted().collect(Collectors.toList());
+            List<String> fieldNames = Arrays.stream(this.getClass().getDeclaredFields()).map(Field::getName).sorted().collect(Collectors.toList());
             StringBuilder hashData = new StringBuilder();
             Iterator<String> itr = fieldNames.iterator();
             while (itr.hasNext()) {
                 String fieldName = itr.next();
-                if (this.getClass().getField(fieldName).get(this) == null) continue;
-                String fieldValue = (String) this.getClass().getField(fieldName).get(this);
+                Field field = this.getClass().getDeclaredField(fieldName);
+                field.setAccessible(true);
+                if (field.get(this) == null) continue;
+                String fieldValue = (String) field.get(this);
                 if ((fieldValue != null) && (fieldValue.length() > 0)) {
                     hashData.append(fieldName);
                     hashData.append('=');
@@ -75,8 +71,9 @@ public abstract class VnpayParam {
                         hashData.append('&');
                     }
                 }
+                field.setAccessible(false);
             }
-            return SecurityUtils.hmacSHA512(vnp_HashSecret, hashData.toString());
+            return EftSecurity.hmacSHA512(vnp_HashSecret, hashData.toString());
         } catch (UnsupportedEncodingException | NoSuchFieldException | IllegalAccessException
                 | NoSuchAlgorithmException | InvalidKeyException e) {
             e.printStackTrace();
@@ -86,6 +83,7 @@ public abstract class VnpayParam {
 
     public String generateHashQuery() {
         String vnp_SecureHash = this.generateHash();
+        if (vnp_SecureHash == null) return null;
         return generateQuery().concat("&vnp_SecureHash=").concat(vnp_SecureHash);
     }
 }
