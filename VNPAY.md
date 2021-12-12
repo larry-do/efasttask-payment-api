@@ -1,0 +1,1 @@
+https://sandbox.vnpayment.vn/apis/docs/bang-ma-loi/
